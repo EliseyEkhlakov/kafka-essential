@@ -23,19 +23,25 @@ public class ProducerDemoKeys {
         KafkaProducer<String, String> producer = new KafkaProducer<>(properties);
 
 
+        for (int i = 0; i < 10; i++) {
 
-        for(int i=0; i< 10; i++){
-            ProducerRecord<String , String> record =
+            String topic = "topic1";
+            String value = "test value " + i;
+            String key = "id_" + i;
+
+            ProducerRecord<String, String> record =
                     new ProducerRecord<>(
-                            "topic1",
-                            "test data " + i
+                            topic,
+                            key,
+                            value
                     );
             producer.send(record, new Callback() {
                 @Override
                 public void onCompletion(RecordMetadata metadata, Exception exception) {
-                    if(exception == null){
+                    if (exception == null) {
                         log.info("Received new metadata/ \n " +
                                 "topic: " + metadata.topic() + "\n" +
+                                "key: " + record.key() + "\n" +
                                 "partition: " + metadata.partition() + "\n" +
                                 "offset: " + metadata.offset() + "\n" +
                                 "timestamp: " + metadata.timestamp()
@@ -45,12 +51,6 @@ public class ProducerDemoKeys {
                     }
                 }
             });
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
 
         }
 
